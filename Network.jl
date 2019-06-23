@@ -15,7 +15,8 @@ function feedforward(network::Network, input::Array{Float64,1})::Array{Float64,1
     a
 end
 
-sigmoid(y) = 1 / (1 + exp(-y))
+sigmoid(z) = 1 / (1 + exp(-z))
+sigmoid_prime(z) = sigmoid(z) * (1 - sigmoid(z))
 
 network = Network([2, 5, 2])
 
