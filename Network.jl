@@ -1,6 +1,7 @@
 using Random
 
-const DataSet = Array{Tuple{Array{Float64,1},Array{Float64,1}},1}
+const Data = Tuple{Array{Float64,1},Array{Float64,1}}
+const DataSet = Array{Data,1}
 
 struct Network
     biases::Array{Array{Float64,1},1}
@@ -33,12 +34,16 @@ function train(network::Network, epochs::Int, batch_size::Int,
 end
 
 function train_batch(network::Network, batch::DataSet, learning_rate::Float64)
+    delta_b_sum = [zeros(size(b)) for b in network.biases]
+    delta_w_sum = [zeros(size(w)) for w in network.weights]
+    for data in batch
+        (delta_b, delta_w) = backpropagate(data)
+    end
+end
 
+function backpropagate(network::Network, (x, y)::Data)
+    
 end
 
 sigmoid(z) = 1 / (1 + exp(-z))
 sigmoid_prime(z) = sigmoid(z) * (1 - sigmoid(z))
-
-network = Network([2, 5, 2])
-
-println(feedforward(network, [1., 1.]))
