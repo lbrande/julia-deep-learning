@@ -38,7 +38,13 @@ function train_batch(network::Network, batch::DataSet, learning_rate::Float64)
     delta_w_sum = [zeros(size(w)) for w in network.weights]
     for data in batch
         (delta_b, delta_w) = backpropagate(data)
+        delta_b_sum = [dbs + db for (dbs, db) in zip(delta_b_sum, delta_b)]
+        delta_w_sum = [dws + dw for (dws, dw) in zip(delta_w_sum, delta_w)]
     end
+    network.biases = [b - learning_rate * dbs / size(batch)
+            for (b, dbs) in zip(network.biases, delta_b_sum)]
+    network.weights = [w - learning_rate * dws / size(batch)
+            for (w, dws) in zip(network.weights, delta_w_sum)]
 end
 
 function backpropagate(network::Network, (x, y)::Data)
