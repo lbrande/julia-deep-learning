@@ -27,7 +27,12 @@ function train(network::Network, epochs::Int, batch_size::Int,
         for batch in batches
             train_batch(network, batch, learning_rate)
         end
-        println(string("Epoch $(i) complete"))
+        if test_data == nothing
+            println(string("Epoch $(i) complete"))
+        else
+            println(string("Epoch $(i): $(evaluate(network, test_data)) / ",
+                    "$(size(test_data))"))
+        end
     end
 end
 
@@ -66,6 +71,13 @@ function backpropagate(network::Network, (x, y)::Data)::Tuple{Biases,Weights}
     (nabla_b, nabla_w)
 end
 
-function evaluate(test_data::DataSet, eval_function)::Int
-    sum(eval_function((x, y)) for (x, y) in test_data)
+function evaluate(network::Network, test_data::DataSet)::Int
+    sum(argmax(feedforward(network, x)) == argmax(y) for (x, y) in test_data)
+end
+
+function feedforward(network::Network, input::Array{Float64,1})::Array{Float64,1}
+    for (b, w) in zip(network.biases, network.weights)
+        input = sigmoid.(w * input .+ b)
+    end
+    input
 end
