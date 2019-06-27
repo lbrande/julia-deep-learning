@@ -65,3 +65,7 @@ function backpropagate(network::Network, (x, y)::Data)::Tuple{Biases,Weights}
     end
     (nabla_b, nabla_w)
 end
+
+function evaluate(test_data::DataSet, eval_function)::Int
+    sum(eval_function((x, y)) for (x, y) in test_data)
+end
