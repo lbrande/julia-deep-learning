@@ -8,7 +8,7 @@ const DataSet = Array{Data,1}
 sigmoid(z) = 1 / (1 + exp(-z))
 sigmoid_prime(z) = sigmoid(z) * (1 - sigmoid(z))
 
-struct Network
+mutable struct Network
     biases::Biases
     weights::Weights
 end
@@ -23,15 +23,14 @@ function train(network::Network, epochs::Int, batch_size::Int,
     for i in 1:epochs
         shuffle!(training_data)
         batches = [training_data[j:j + batch_size - 1]
-                for j in 1:batch_size:size(training_data)]
+                for j in 1:batch_size:length(training_data)]
         for batch in batches
             train_batch(network, batch, learning_rate)
         end
         if test_data == nothing
-            println(string("Epoch $(i) complete"))
+            println("Epoch $(i) complete")
         else
-            println(string("Epoch $(i): $(evaluate(network, test_data)) / ",
-                    "$(size(test_data))"))
+            println("Epoch $(i): $(evaluate(network, test_data)) / $(length(test_data))")
         end
     end
 end
@@ -40,13 +39,13 @@ function train_batch(network::Network, batch::DataSet, learning_rate::Float64)
     nabla_b = [zeros(size(b)) for b in network.biases]
     nabla_w = [zeros(size(w)) for w in network.weights]
     for data in batch
-        (delta_nabla_b, delta_nabla_w) = backpropagate(data)
+        (delta_nabla_b, delta_nabla_w) = backpropagate(network, data)
         nabla_b = [nb + dnb for (nb, dnb) in zip(nabla_b, delta_nabla_b)]
         nabla_w = [nw + dnw for (nw, dnw) in zip(nabla_w, delta_nabla_w)]
     end
-    network.biases = [b - learning_rate * dbs / size(batch)
+    network.biases = [b - learning_rate * dbs / length(batch)
             for (b, dbs) in zip(network.biases, nabla_b)]
-    network.weights = [w - learning_rate * dws / size(batch)
+    network.weights = [w - learning_rate * dws / length(batch)
             for (w, dws) in zip(network.weights, nabla_w)]
 end
 
@@ -62,7 +61,7 @@ function backpropagate(network::Network, (x, y)::Data)::Tuple{Biases,Weights}
     delta = (activations[end] .- y) .* sigmoid_prime.(zs[end])
     nabla_b[end] = delta
     nabla_w[end] = delta * transpose(activations[end - 1])
-    for i in 1:size(zs)-1
+    for i in 1:length(zs) - 1
         z = zs[end - i]
         delta = transpose(network.weights[end - i + 1]) * delta .* sigmoid_prime.(z)
         nabla_b[end - i] = delta
