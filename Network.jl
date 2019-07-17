@@ -19,11 +19,10 @@ function Network(layers::Array{Int,1})::Network
 end
 
 function train(network::Network, epochs::Int, batch_size::Int,
-        learning_rate::Float64, training_data::DataSet, test_data::DataSet = nothing)
+               learning_rate::Float64, training_data::DataSet, test_data::DataSet = nothing)
     for i in 1:epochs
         shuffle!(training_data)
-        batches = [training_data[j:j + batch_size - 1]
-                for j in 1:batch_size:length(training_data)]
+        batches = [training_data[j:j + batch_size - 1] for j in 1:batch_size:length(training_data)]
         for batch in batches
             train_batch(network, batch, learning_rate)
         end

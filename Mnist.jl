@@ -34,3 +34,5 @@ end
 function throw(stream::IOStream, nb::Int)
     read(stream, nb)
 end
+
+run([784, 30, 10], 30, 10, 3.)
