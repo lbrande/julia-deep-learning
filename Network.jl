@@ -42,10 +42,10 @@ function train_batch(network::Network, batch::DataSet, learning_rate::Float64)
         nabla_b = [nb + dnb for (nb, dnb) in zip(nabla_b, delta_nabla_b)]
         nabla_w = [nw + dnw for (nw, dnw) in zip(nabla_w, delta_nabla_w)]
     end
-    network.biases = [b - learning_rate * dbs / length(batch)
-            for (b, dbs) in zip(network.biases, nabla_b)]
-    network.weights = [w - learning_rate * dws / length(batch)
-            for (w, dws) in zip(network.weights, nabla_w)]
+    network.biases = [b - learning_rate * nb / length(batch)
+            for (b, nb) in zip(network.biases, nabla_b)]
+    network.weights = [w - learning_rate * nw / length(batch)
+            for (w, nw) in zip(network.weights, nabla_w)]
 end
 
 function backpropagate(network::Network, (x, y)::Data)::Tuple{Biases,Weights}
